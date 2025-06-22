@@ -9,11 +9,33 @@ const ROULETTE_CONFIG = {
   }
 };
 
+// 获取北京时间的日期字符串 (YYYY-MM-DD 格式)
+function getBeijingDateString() {
+  const now = new Date();
+  // 获取UTC时间戳，然后加上8小时（北京时间UTC+8）
+  const beijingTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
+  
+  const year = beijingTime.getUTCFullYear();
+  const month = String(beijingTime.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(beijingTime.getUTCDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+}
+
+// 获取北京时间的Date对象
+function getBeijingDate() {
+  const now = new Date();
+  // 获取UTC时间戳，然后加上8小时（北京时间UTC+8）
+  return new Date(now.getTime() + (8 * 60 * 60 * 1000));
+}
+
 // 全局状态
 let hasSpunToday = false;
 let isSpinning = false;
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
+// 使用北京时间初始化当前月份和年份
+const beijingNow = getBeijingDate();
+let currentMonth = beijingNow.getUTCMonth();
+let currentYear = beijingNow.getUTCFullYear();
 let spinResult = null; // 存储抽取结果
 let isPityTriggered = false; // 是否触发保底
 let pendingImportData = null; // 待导入的数据
@@ -102,8 +124,8 @@ function getDaysSinceLastLu() {
   
   for (const date of dates) {
     if (history[date] === 'success') {
-      const lastLuDate = new Date(date);
-      const today = new Date();
+      const lastLuDate = new Date(date + 'T00:00:00+08:00'); // 明确指定北京时间
+      const today = getBeijingDate();
       const diffTime = today - lastLuDate;
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
       return diffDays;
@@ -128,7 +150,7 @@ function exportData() {
   const data = {
     spinHistory: JSON.parse(localStorage.getItem('spinHistory') || '{}'),
     settings: getSettings(),
-    exportDate: new Date().toISOString(),
+    exportDate: getBeijingDate().toISOString(),
     version: '1.0'
   };
   
@@ -136,7 +158,7 @@ function exportData() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `lubulu-data-${new Date().toISOString().split('T')[0]}.json`;
+  link.download = `lubulu-data-${getBeijingDateString()}.json`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -326,7 +348,7 @@ async function takeScreenshot() {
     
     // 创建下载链接
     const link = document.createElement('a');
-    link.download = `Lubulu-结果-${new Date().toISOString().split('T')[0]}.png`;
+    link.download = `Lubulu-结果-${getBeijingDateString()}.png`;
     link.href = canvas.toDataURL('image/png');
     
     // 触发下载
@@ -537,7 +559,7 @@ function hideSettingsDialog() {
 
 // 更新按钮状态
 function updateSpinButtonState() {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getBeijingDateString();
   const history = JSON.parse(localStorage.getItem('spinHistory') || '{}');
   hasSpunToday = !!history[today];
   
@@ -596,7 +618,7 @@ function showResult(isSuccess) {
 
 // 保存结果到localStorage
 function saveResult(finalChoice) {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getBeijingDateString();
   const history = JSON.parse(localStorage.getItem('spinHistory') || '{}');
   history[today] = finalChoice ? 'success' : 'fail';
   localStorage.setItem('spinHistory', JSON.stringify(history));
@@ -775,11 +797,12 @@ async function performSpin() {
 // 日历渲染
 function renderCalendar() {
   const calendarContainer = document.getElementById('calendar');
-  const firstDay = new Date(currentYear, currentMonth, 1);
-  const lastDay = new Date(currentYear, currentMonth + 1, 0);
-  const startWeekDay = firstDay.getDay();
-  const daysInMonth = lastDay.getDate();
-  const today = new Date();
+  // 使用UTC方法创建日期，因为我们已经在用北京时间的年月
+  const firstDay = new Date(Date.UTC(currentYear, currentMonth, 1));
+  const lastDay = new Date(Date.UTC(currentYear, currentMonth + 1, 0));
+  const startWeekDay = firstDay.getUTCDay();
+  const daysInMonth = lastDay.getUTCDate();
+  const today = getBeijingDate();
   
   const history = JSON.parse(localStorage.getItem('spinHistory') || '{}');
   
@@ -842,8 +865,8 @@ function renderCalendar() {
     cell.appendChild(dot);
     grid.appendChild(cell);
     
-    // 今天高亮
-    if (day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear()) {
+    // 今天高亮 - 使用北京时间
+    if (day === today.getUTCDate() && currentMonth === today.getUTCMonth() && currentYear === today.getUTCFullYear()) {
       cell.style.backgroundColor = 'rgba(103, 58, 183, 0.2)';
       cell.style.fontWeight = 'bold';
     }
