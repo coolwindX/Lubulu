@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lubulu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <!-- html2canvas for screenshot functionality -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+  <!-- AppBar -->
+  <header class="app-bar glass">
+    <div class="app-bar__content">
+      <h1 class="title">Lubulu</h1>
+      <button id="settingsBtn" class="settings-btn" aria-label="设置">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L19 6.5C18.89 6.15 18.76 5.82 18.6 5.5L19.5 4L18 2.5L16.5 3.4C16.18 3.24 15.85 3.11 15.5 3L15 1H13L12.5 3C12.15 3.11 11.82 3.24 11.5 3.4L10 2.5L8.5 4L9.4 5.5C9.24 5.82 9.11 6.15 9 6.5L7 7V9L9 9.5C9.11 9.85 9.24 10.18 9.4 10.5L8.5 12L10 13.5L11.5 12.6C11.82 12.76 12.15 12.89 12.5 13L13 15H15L15.5 13C15.85 12.89 16.18 12.76 16.5 12.6L18 13.5L19.5 12L18.6 10.5C18.76 10.18 18.89 9.85 19 9.5L21 9Z" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Primary Section: Roulette Card -->
+    <section class="roulette-section">
+      <div class="roulette-card glass">
+        <div class="roulette-container">
+          <canvas id="rouletteCanvas" width="480" height="480"></canvas>
+          <div class="roulette-pointer"></div>
+        </div>
+        <button id="spinBtn" class="spin-btn">SPIN</button>
+        <div id="tooltip" class="tooltip hidden">今日仅可抽取 1 次</div>
+        
+        <!-- Result Display -->
+        <div id="resultDisplay" class="result-display hidden">
+          <div class="result-icon"></div>
+          <div class="result-text"></div>
+          <div class="pity-notice hidden" id="pityNotice">本次触发保底</div>
+          <div class="result-choice hidden" id="resultChoice">
+            <p>你选择:</p>
+            <div class="choice-buttons">
+              <button id="chooseYes" class="choice-btn yes-btn">Lu</button>
+              <button id="chooseNo" class="choice-btn no-btn">不Lu</button>
+            </div>
+          </div>
+          <div class="result-actions hidden" id="resultActions">
+            <button id="shareResult" class="share-result-btn">分享结果</button>
+            <button id="confirmResult" class="confirm-result-btn">确定</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="stats-section">
+      <div class="stats-card neu-flat">
+        <h3>统计记录</h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-number success" id="successCount">0</div>
+            <div class="stat-label">Lu次数</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number failure" id="failureCount">0</div>
+            <div class="stat-label">不Lu次数</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number total" id="totalCount">0</div>
+            <div class="stat-label">总次数</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number rate" id="successRate">0%</div>
+            <div class="stat-label">克制率</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Secondary Section: Daily Calendar -->
+    <section class="calendar-section">
+      <div class="calendar-card neu-flat" id="calendar"></div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <span>Copyright © 2025 ius. All rights reserved. | <a href="#" id="studioLink" target="_blank">Lubulu</a></span>
+    </div>
+  </footer>
+
+  <!-- Settings Dialog -->
+  <div id="settingsDialog" class="dialog hidden glass">
+    <h3>设置</h3>
+    <div class="settings-content">
+      <div class="setting-item">
+        <label for="pityDays">保底天数:</label>
+        <input type="number" id="pityDays" min="0" max="365" value="0">
+        <span class="setting-hint">0表示不启用保底，设置天数后如果连续不Lu超过此天数将必Lu</span>
+      </div>
+      
+      <div class="setting-item">
+        <label>数据管理:</label>
+        <div class="data-buttons">
+          <button id="exportDataBtn" class="btn-secondary">导出数据</button>
+          <button id="importDataBtn" class="btn-secondary">导入数据</button>
+          <input type="file" id="importFileInput" accept=".json" style="display: none;">
+        </div>
+      </div>
+    </div>
+    
+    <div class="dialog-actions">
+      <button id="settingsCancelBtn" class="btn-secondary">取消</button>
+      <button id="settingsSaveBtn" class="btn-primary">保存</button>
+    </div>
+  </div>
+
+  <!-- Confirmation Dialog -->
+  <div id="confirmDialog" class="dialog hidden glass">
+    <p>确定今日要抽取?</p>
+    <div class="dialog-actions">
+      <button id="cancelBtn" class="btn-secondary">取消</button>
+      <button id="confirmBtn" class="btn-primary">确定</button>
+    </div>
+  </div>
+
+  <!-- Import Confirmation Dialog -->
+  <div id="importConfirmDialog" class="dialog hidden glass">
+    <h3>确认导入</h3>
+    <p>确定要导入数据吗？这将覆盖当前的所有数据！</p>
+    <div class="dialog-actions">
+      <button id="importCancelBtn" class="btn-secondary">取消</button>
+      <button id="importConfirmBtn" class="btn-primary">确定导入</button>
+    </div>
+  </div>
+
+  <!-- Notification Dialog -->
+  <div id="notificationDialog" class="notification-dialog hidden">
+    <div class="notification-content">
+      <div class="notification-icon"></div>
+      <div class="notification-message"></div>
+      <button id="notificationOkBtn" class="btn-primary">确定</button>
+    </div>
+  </div>
+
+  <!-- Overlay for dialogs -->
+  <div id="overlay" class="overlay hidden"></div>
+
+  <script src="script.js"></script>
+</body>
+</html> 
