@@ -99,9 +99,25 @@
     <h3>设置</h3>
     <div class="settings-content">
       <div class="setting-item">
+        <label for="luProbability">Lu概率设置:</label>
+        <input type="range" id="luProbability" min="1" max="98" value="1" step="1">
+        <span id="luProbabilityValue">1</span>
+        <span class="setting-hint">设置Lu的概率（1-98），剩余为不Lu的概率</span>
+      </div>
+      
+      <div class="setting-item">
         <label for="pityDays">保底天数:</label>
         <input type="number" id="pityDays" min="0" max="365" value="0">
         <span class="setting-hint">0表示不启用保底，设置天数后如果连续不Lu超过此天数将必Lu</span>
+      </div>
+      
+      <div class="setting-item">
+        <label>抽取模式:</label>
+        <div class="mode-buttons">
+          <button id="singleModeBtn" class="mode-btn active">单次模式</button>
+          <button id="multiModeBtn" class="mode-btn">多次模式</button>
+        </div>
+        <span class="setting-hint">单次模式：每天只能抽取一次；多次模式：每天第一次记录，后续仅显示结果</span>
       </div>
       
       <div class="setting-item">
@@ -150,6 +166,50 @@
 
   <!-- Overlay for dialogs -->
   <div id="overlay" class="overlay hidden"></div>
+
+  <!-- Update Log Dialog -->
+  <div id="updateLogDialog" class="dialog hidden glass">
+    <h3>🎉 更新日志 - v2.0</h3>
+    <div class="update-content">
+      <div class="update-item">
+        <h4>🎯 新功能</h4>
+        <ul>
+          <li>✨ 支持自定义Lu概率设置（1-98%）</li>
+          <li>🎨 轮盘外观根据概率动态变化</li>
+          <li>📝 支持修改历史记录状态</li>
+          <li>🔄 新增多次抽取模式</li>
+          <li>📊 优化统计显示</li>
+        </ul>
+      </div>
+      
+      <div class="update-item">
+        <h4>🛠️ 使用说明</h4>
+        <ul>
+          <li>在设置中调整Lu概率，轮盘会实时更新</li>
+          <li>点击日历中的日期可以修改当天的状态</li>
+          <li>多次模式下可以反复抽取，但只有第一次记录</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="dialog-actions">
+      <button id="updateLogOkBtn" class="btn-primary">我知道了</button>
+    </div>
+  </div>
+
+  <!-- History Edit Dialog -->
+  <div id="historyEditDialog" class="dialog hidden glass">
+    <h3>编辑历史记录</h3>
+    <p id="historyEditDate"></p>
+    <div class="history-edit-buttons">
+      <button id="setLuBtn" class="choice-btn yes-btn">设为Lu</button>
+      <button id="setNoLuBtn" class="choice-btn no-btn">设为不Lu</button>
+      <button id="clearHistoryBtn" class="btn-secondary">清除记录</button>
+    </div>
+    <div class="dialog-actions">
+      <button id="historyEditCancelBtn" class="btn-secondary">取消</button>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

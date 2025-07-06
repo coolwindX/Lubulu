@@ -15,6 +15,19 @@
 
 * {
   box-sizing: border-box;
+  /* 禁用文本选择 */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* 禁用拖拽 */
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  /* 禁用点击高亮 */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -25,6 +38,55 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* 允许输入框进行文本选择 */
+input[type="text"], 
+input[type="number"], 
+input[type="email"], 
+input[type="password"], 
+textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* 特别处理滑块，确保不会被选中 */
+input[type="range"] {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+
+/* 禁用图片和canvas的拖拽 */
+img, canvas {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  pointer-events: auto;
+}
+
+/* 允许某些文本内容被选中（如更新日志等） */
+.update-content,
+.notification-message,
+.setting-hint {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* 确保按钮和交互元素不会被拖拽 */
+button, .btn-primary, .btn-secondary, .choice-btn, .mode-btn {
+  -webkit-user-drag: none !important;
+  -khtml-user-drag: none !important;
+  -moz-user-drag: none !important;
+  -o-user-drag: none !important;
+  user-drag: none !important;
 }
 
 /* Glassmorphism */
@@ -567,11 +629,151 @@ main {
 }
 
 .setting-hint {
-  display: block;
   font-size: 12px;
-  color: #666;
-  margin-top: 4px;
+  color: #999;
+  margin-top: 8px;
+  display: block;
   line-height: 1.4;
+}
+
+/* Probability Slider */
+.setting-item input[type="range"] {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  background: #ddd;
+  border-radius: 4px;
+  outline: none;
+  margin: 8px 0;
+}
+
+.setting-item input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--primary);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: transform 0.1s ease;
+}
+
+.setting-item input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.setting-item input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--primary);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+#luProbabilityValue {
+  display: inline-block;
+  background: var(--primary);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-left: 8px;
+  min-width: 32px;
+  text-align: center;
+}
+
+/* Mode Buttons */
+.mode-buttons {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 8px 16px;
+  border: 2px solid var(--primary);
+  background: transparent;
+  color: var(--primary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.mode-btn.active {
+  background: var(--primary);
+  color: white;
+}
+
+.mode-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(103, 58, 183, 0.3);
+}
+
+/* Update Log Dialog */
+.update-content {
+  max-width: 500px;
+  max-height: 400px;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.update-item {
+  margin-bottom: 24px;
+}
+
+.update-item h4 {
+  color: var(--primary);
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+.update-item ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.update-item li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+/* History Edit Dialog */
+.history-edit-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+#historyEditDate {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 20px;
+}
+
+.calendar-cell:hover {
+  background-color: rgba(103, 58, 183, 0.1);
+  transform: scale(1.05);
+}
+
+.calendar-cell.editable {
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.calendar-cell.editable:hover {
+  border-color: var(--primary);
+  background-color: rgba(103, 58, 183, 0.05);
 }
 
 .data-buttons {
